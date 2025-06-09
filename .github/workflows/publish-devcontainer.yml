@@ -1,0 +1,44 @@
+name: Publish Devcontainer Image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: 'Disable Docker build cache?'
+        required: false
+        default: 'false'  # Cache enabled by default
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push devcontainer image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .devcontainer/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
+          no-cache: ${{ github.event.inputs.no-cache == 'true' }}
