@@ -28,4 +28,20 @@ contract Calldata {
         return msg.data;
     }
 
+    function call_staticType() external {
+        this.staticType(1,2);
+    }
+
+    function staticType(uint256 a, uint256 b) external pure returns (bytes memory){
+        return msg.data;
+    }
+
+    function call_dynamicType() external {
+        this.dynamicType("DecipherClub");
+    }
+
+    function dynamicType(string memory s) public pure returns(bytes memory ){
+        return msg.data;
+    }
+
 }
